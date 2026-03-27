@@ -2,7 +2,7 @@
 
 `stt-whisper` is a `faster-whisper`-based transcription workflow for Korean lecture-style audio. It is organized around a Google Colab notebook for interactive use, with an optional GCP Spot VM path for batch-style runs.
 
-The project is tuned primarily for single-speaker recordings such as lectures and sermons. The recommended flow is to improve raw transcription quality first, review the base `.txt` output, and enable LLM-based correction only after the raw transcript is already acceptable.
+The project is tuned primarily for single-speaker recordings such as lectures and sermons. The recommended flow is to improve raw transcription quality first, review the raw transcript outputs, and enable LLM-based correction only after the base transcript is already acceptable.
 
 Although the defaults target Korean audio, the same workflow can be adapted to other languages by changing `WHISPER_LANGUAGE` in the notebook config cell or CLI settings.
 
@@ -34,7 +34,7 @@ Colab은 설정을 바꿔가며 결과를 확인하기 쉬운 기본 실행 환�
 
 - Notebook: [notebooks/transcribe_to_txt_colab.ipynb](notebooks/transcribe_to_txt_colab.ipynb)
 
-This repository is now organized around the Colab notebook workflow.
+The Colab notebook is the main interactive entry point in this repository.
 
 ## Best Fit
 
@@ -47,7 +47,12 @@ For conversational or multi-speaker audio, consider using a diarization-capable 
 ## Colab Workflow
 
 1. Put the repository in Google Drive.
-   The default path is `/content/drive/MyDrive/stt-whisper`.
+   - Recommended folder layout:
+     - `MyDrive/stt-whisper/`
+       - `data/` (input/output audio + text files)
+       - `notebooks/` (Colab notebook)
+       - `prompts/` (LLM correction prompts)
+       - `src/` (scripts: `transcribe_to_txt.py`, `gcp_job_runner.py` etc.)
 
 2. Open [notebooks/transcribe_to_txt_colab.ipynb](notebooks/transcribe_to_txt_colab.ipynb) in Colab.
 
@@ -60,7 +65,9 @@ For conversational or multi-speaker audio, consider using a diarization-capable 
 
 5. Start with `SKIP_CORRECTION = True` and inspect the raw transcript first.
 
-6. Enable correction only after the raw transcript is good enough.
+6. Enable correction only after raw transcript quality is acceptable.
+
+> NOTE: generated output filenames are described in **Generated Files** below.
 
 ## Generated Files
 
@@ -348,7 +355,7 @@ uv sync --python 3.11 --extra gcp
 
 ### Save GCP Defaults In `.env`
 
-If you want to avoid repeating the same GCP options on every run, copy [`.env.example`](.env.example) to `.env` and fill in the GCP launcher values.
+If you want to avoid repeating the same GCP options on every run, create a `.env` file in the project root and fill in the GCP launcher values.
 
 Key variables:
 
@@ -552,12 +559,12 @@ uv run python gcp_submit_job.py data/sample_lecture.mp3 \
 
 This reduces cold-start time by avoiding repeated `pip install` work and by keeping the converted `large-v3` model on the VM image itself.
 The launcher also defaults to an `80 GiB` boot disk for the `stt-whisper` custom image family, so you usually do not need to pass `--boot-disk-size-gb` explicitly in that mode.
-The current custom image preparation flow may still create a baked virtualenv on Python `3.10` because it depends on the base Deep Learning VM image, but the local project environment should remain on Python `3.11+`.
+The current custom image preparation flow may still create a baked virtualenv with the base image's default `python3`, but the local project environment should remain on Python `3.11+`.
 
 ### Operational Checks
 
 - Confirm that your chosen zone has available T4 quota for your project.
-- Confirm that the default Compute Engine service account is allowed to access both buckets.
+- Confirm that the VM service account is allowed to access both buckets.
 - If VM creation fails because of bucket names, change them to globally unique names and rerun the setup commands.
 - If VM creation fails because of GPU availability, choose another T4-capable zone and update the launcher command.
 - The first VM boot can take noticeably longer because the startup script installs the NVIDIA driver on Debian 12 before transcription starts.
