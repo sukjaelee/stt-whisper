@@ -1,0 +1,27 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "stt-whisper"
+version = "0.1.0"
+description = "Colab-first Korean audio transcription utilities built with faster-whisper."
+requires-python = ">=3.11"
+dependencies = [
+    "faster-whisper>=1.2.1,<2",
+    "openai>=1.0.0",
+    "python-dotenv>=1.0.0",
+]
+
+[project.optional-dependencies]
+gcp = [
+    "google-api-python-client>=2.169.0",
+    "google-auth>=2.40.0",
+    "google-cloud-storage>=2.19.0",
+]
+
+[tool.setuptools]
+py-modules = ["direct_correction", "gcp_job_runner", "path_utils", "transcribe_to_txt", "transcription_utils"]
+
+[tool.setuptools.package-dir]
+"" = "src"
