@@ -6,7 +6,7 @@ The project is tuned primarily for single-speaker recordings such as lectures an
 
 Although the defaults target Korean audio, the same workflow can be adapted to other languages by changing `WHISPER_LANGUAGE` in the notebook config cell or CLI settings.
 
-This project is shared openly in the hope that it may be useful to someone working on lecture and sermon transcription problems.
+I hope this project is helpful for transcribing lectures and sermons.
 
 ## Korean Summary
 
@@ -18,7 +18,7 @@ Colab은 설정을 바꿔가며 결과를 확인하기 쉬운 기본 실행 환�
 실무에서는 보통 `SKIP_CORRECTION = True`로 먼저 원본 전사 결과를 확인한 뒤, 원 전사 품질이 충분히 괜찮을 때만 교정 단계를 켜는 것이 좋습니다.
 현재 설정은 주로 한국어 강의형 음성에 맞춰져 있지만, 노트북이나 CLI에서 `WHISPER_LANGUAGE`를 바꾸면 다른 언어에도 같은 흐름을 적용할 수 있습니다.
 
-강의, 설교 녹취 전사 문제를 다루는 누군가에게 이 프로젝트가 도움이 되길 바라며 공개합니다.
+강의, 설교 녹취 전사 문제를 다루는 누군가에게 이 프로젝트가 도움이 되길 바랍니다.
 
 ## Core Approach
 
