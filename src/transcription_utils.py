@@ -210,14 +210,23 @@ def transcribe_with_runtime_fallback(
     config: WhisperTranscriptionConfig | None = None,
     print_fn: Callable[[str], None] | None = print,
     prepared_audio_path: Path | None = None,
+    preprocess_audio: bool = True,
+    require_wav_input: bool = False,
 ) -> tuple[object, object, str, Path]:
     resolved_config = config or WhisperTranscriptionConfig()
     model_id = resolved_config.model_path or resolved_config.model_size
-    resolved_prepared_audio_path = preprocess_audio_for_transcription(
-        audio_path,
-        output_path=prepared_audio_path,
-        audio_filter=build_audio_filter(enable_denoise=resolved_config.enable_denoise),
-    )
+    is_wav_input = audio_path.suffix.lower() == ".wav"
+    if require_wav_input and not is_wav_input:
+        raise ValueError(f"Expected a .wav input file, got: {audio_path}")
+
+    if is_wav_input or not preprocess_audio:
+        resolved_prepared_audio_path = audio_path
+    else:
+        resolved_prepared_audio_path = preprocess_audio_for_transcription(
+            audio_path,
+            output_path=prepared_audio_path,
+            audio_filter=build_audio_filter(enable_denoise=resolved_config.enable_denoise),
+        )
     transcribe_options = build_transcribe_options(resolved_config)
     preferred_device = resolve_runtime_device(resolved_config.device)
 
